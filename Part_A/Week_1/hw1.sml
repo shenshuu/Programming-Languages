@@ -1,7 +1,11 @@
 fun is_older (d1 : int * int * int, d2 : int * int * int) =
-    (#1 d1) <= (#1 d2)
-    andalso (#2 d1) <= (#2 d2)
-    andalso (#3 d1) < (#3 d2)
+    (#1 d1) < (#1 d2)
+    orelse (#1 d1) = (#1 d2)
+    andalso (#2 d1) < (#2 d2)
+    orelse (#1 d1) = (#1 d2)
+	   andalso (#2 d1) = (#2 d2)
+	   andalso (#3 d1) < (#3 d2)
+				 
 			 
     
 fun number_in_month (ds : (int * int * int) list, month : int) =
@@ -59,7 +63,7 @@ fun date_to_string (date : int * int * int) =
 
 fun number_before_reaching_sum (sum : int, nums : int list) =
     if sum <= 0
-    then 0
+    then ~1
     else 1 + number_before_reaching_sum(sum - (hd nums), tl nums)
 
 
@@ -67,7 +71,7 @@ fun what_month (n : int) =
     let
 	val days = [31,28,31,30,31,30,31,31,30,31,30,31]
     in
-	number_before_reaching_sum(n, days)
+	number_before_reaching_sum(n, days)+1
     end
 
 			  
@@ -76,7 +80,7 @@ fun month_range (day1 : int, day2 : int) =
     then []
     else what_month(day1)::month_range(day1+1, day2)
 
-				      
+			      
 fun oldest (ds : (int * int * int) list) =
     if null ds
     then NONE
@@ -86,14 +90,14 @@ fun oldest (ds : (int * int * int) list) =
 		if null (tl dates)
 		then hd dates
 		else
-		    let ans = helper(tl dates)
+		    let
+			val ans = helper(tl dates)
 		    in
 			if is_older(hd dates, ans)
 			then hd dates
 			else ans
 		    end
 	in
-	    SOME helper(ds)
+	    SOME (helper ds) 
 	end
 
-	    
