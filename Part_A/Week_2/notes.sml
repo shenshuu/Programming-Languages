@@ -70,7 +70,7 @@ fun f (x : mytype) =
       | TwoInts(i1,i2) => i1 + i2
 
 
-datatype suit = Club | Diamond | Heart | Ace
+datatype suit = Club | Diamond | Heart | Spade
 datatype rank = Jack | Queen | King | Ace | Num of int
 type card = suit * rank
 
@@ -80,4 +80,34 @@ val c2 = (Spade, Queen)
 fun is_Queen_of_Spades (c : card) =
     (#1 c) = Spade andalso (#2 c) = Queen
 
-					
+(* The "more general" rule:
+A type t1 is more general than the type t2 if you can take t1,
+replace its type variables consistently, and get t2
+ *) 
+
+fun nondecreasing xs = (* int list -> bool *)
+    case xs of
+	[] => true
+      | _::[] => true
+      | head::(neck::rest) => head <= neck andalso nondecreasing (neck::rest)
+
+datatype sgn = P | N | Z
+
+fun multsign (x1, x2) = (* int * int -> sgn *)
+    let fun sign x = if x=0 then Z else if x > 0 then P else N
+    in
+	case (sign x1, sign x2) of
+	    (Z, _) => Z			  
+	  | (_, Z) => Z
+	  | (P, P) => P
+	  | (N, N) => P
+	  | _ => N
+    end
+
+
+(* What is a tail call?
+informally: When there is nothing left for caller to do
+formally: If the result of f(x) is the "immediate result"
+for the enclosing function body, then f(x) is a tail call *)
+
+	
