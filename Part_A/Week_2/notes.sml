@@ -110,4 +110,4 @@ informally: When there is nothing left for caller to do
 formally: If the result of f(x) is the "immediate result"
 for the enclosing function body, then f(x) is a tail call *)
 
-	
+(* Polymorphic datatypes *)
