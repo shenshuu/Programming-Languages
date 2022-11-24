@@ -47,7 +47,7 @@ fun get_substitutions2 (subs, s) =
 			      | SOME ys => helper(xs', ys @ acc)
     in helper(subs, [])
     end
-
+(* Fix similar_names function *)
 fun similar_names (xs, {first=x, middle=y, last=z}) =
     let val name = {first=x, middle=y, last=z}
 	fun helper ys =
