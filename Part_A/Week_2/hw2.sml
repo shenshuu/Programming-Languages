@@ -27,24 +27,24 @@ fun all_except_option (n, ns) =
 		   then SOME ns'
 		   else case all_except_option(n, ns') of
 			    NONE => NONE
-			  | SOME (x::xs) => SOME (x::xs)
+			  | SOME tail => SOME (n'::tail)
 
 						 
 fun get_substitutions1 (subs, s) =
     case subs of
 	[] => []
-      | [s']::subs' => case all_except_option(s, [s']) of
-			 NONE => get_substitutions1(subs', s)
-		       | SOME xs => get_substitutions1(subs', s) @ xs
+      | s'::subs' => case all_except_option(s, s') of
+			 NONE => []
+		       | SOME xs => xs @ get_substitutions1(subs', s)
 
 							   
 fun get_substitutions2 (subs, s) =
     let fun helper (xs, acc) =
 	    case xs of
 		[] => acc
-	      | [x]::xs' => case all_except_option(s,[x]) of
-				NONE => helper(xs', acc)
-			      | SOME ys => helper(xs', acc @ ys)
+	      | x::xs' => case all_except_option(s, x) of
+				NONE => []
+			      | SOME ys => helper(xs', ys @ acc)
     in helper(subs, [])
     end
 
@@ -53,7 +53,7 @@ fun similar_names (xs, {first=x, middle=y, last=z}) =
 	    case ys of
 		[] => [{first=x, middle=y, last=z}]
 	      | y'::ys' => {first=y', middle=y, last=z}::helper(ys')
-    in rev(helper(get_substitutions2(xs, x)))
+    in helper(get_substitutions2(xs, x))
     end
 
 fun card_color c =
