@@ -35,17 +35,25 @@ fun get_substitutions1 (subs, s) =
 	[] => []
       | [s']::subs' => case all_except_option(s, [s']) of
 			 NONE => get_substitutions1(subs', s)
-		       | SOME xs => xs @ get_substitutions1(subs', s)
+		       | SOME xs => get_substitutions1(subs', s) @ xs
 
 							   
 fun get_substitutions2 (subs, s) =
     let fun helper (xs, acc) =
 	    case xs of
 		[] => acc
-	      | [x]::xs' => case all_except_option(s, [x]) of
+	      | [x]::xs' => case all_except_option(s,[x]) of
 				NONE => helper(xs', acc)
 			      | SOME ys => helper(xs', acc @ ys)
     in helper(subs, [])
+    end
+
+fun similar_names (xs, {first=x, middle=y, last=z}) =
+    let fun helper ys =
+	    case ys of
+		[] => [{first=x, middle=y, last=z}]
+	      | y'::ys' => {first=y', middle=y, last=z}::helper(ys')
+    in rev(helper(get_substitutions2(xs, x)))
     end
 
 fun card_color c =
@@ -84,9 +92,23 @@ fun sum_cards cs =
 fun score (cs, goal) =
     let val sum = sum_cards(cs)
     in
-	if sum > goal
-	then 3 * (sum - goal)
-	else goal - sum
+	case (all_same_color(cs), sum > goal) of
+	    (true, true) => (3 * (sum - goal)) div 2
+	  | (true, false) => (goal - sum) div 2
+	  | (false, true) => 3 * (sum - goal)
+	  | (false, false) => goal - sum 
     end
-	
-	
+
+fun officiate (cs, ms, goal) =
+    let fun helper (held, cs, ms) =
+	    if sum_cards(held) > goal
+	    then score(held, goal)
+	    else case (cs, ms) of		
+		([], _) => score(held, goal)
+	      | (_, []) => score(held, goal)
+	      | (c::cs', Discard(c')::ms') =>
+		helper(remove_card(held, c', IllegalMove), c::cs', ms')
+	      | (c::cs', Draw::ms') => helper(c::held, cs', ms')
+    in
+	helper([], cs, ms)
+    end
