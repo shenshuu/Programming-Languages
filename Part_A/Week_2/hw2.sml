@@ -49,11 +49,12 @@ fun get_substitutions2 (subs, s) =
     end
 
 fun similar_names (xs, {first=x, middle=y, last=z}) =
-    let fun helper ys =
+    let val name = {first=x, middle=y, last=z}
+	fun helper ys =
 	    case ys of
-		[] => [{first=x, middle=y, last=z}]
-	      | y'::ys' => {first=y', middle=y, last=z}::helper(ys')
-    in helper(get_substitutions2(xs, x))
+		[] => []
+	      | y'::ys' => [{first=y', middle=y, last=z}] @ helper(ys')
+    in [name] @ helper(get_substitutions2(xs, x)) 
     end
 
 fun card_color c =
