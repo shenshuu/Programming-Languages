@@ -80,6 +80,7 @@ fun all_same_color cs =
     case cs of
 	[] => true
       | c1::[] => true
+      | c1::c2::[] => c1=c2 
       | c1::c2::cs' => c1=c2 andalso all_same_color cs'
 						    
 fun sum_cards cs =

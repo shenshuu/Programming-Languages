@@ -96,6 +96,3 @@ fun oldest (ds: (int * int * int) list) =
 	in
 	    SOME (helper ds)
 	end
-	    
-fun number_in_months_challenge (ds : (int * int * int) list, ms : (int * int * int) list) =
-    
