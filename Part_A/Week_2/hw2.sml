@@ -45,8 +45,48 @@ fun get_substitutions2 (subs, s) =
 	      | [x]::xs' => case all_except_option(s, [x]) of
 				NONE => helper(xs', acc)
 			      | SOME ys => helper(xs', acc @ ys)
-    in case helper(subs, []) of
-	   [] => []
-	 | x::xs => x::xs
+    in helper(subs, [])
     end
+
+fun card_color c =
+    case c of
+	(Clubs, _) => Black
+      | (Spades, _) => Black
+      | _ => Red
+
+fun card_value c =
+    case c of
+	(_, Ace) => 11
+      | (_, Num n) => n
+      | _ => 10
+
+fun remove_card (cs, c, e) =
+    case cs of
+	[] => raise e
+      | c'::cs' => if c'=c
+		   then cs'
+		   else remove_card(cs', c, e)
+
+fun all_same_color cs =
+    case cs of
+	[] => true
+      | c1::[] => true
+      | c1::c2::cs' => c1=c2 andalso all_same_color cs'
+						    
+fun sum_cards cs =
+    let fun helper (xs, acc) =
+	    case xs of
+		[] => acc
+	      | x::xs' => helper(xs', card_value(x) + acc)
+    in helper(cs, 0)
+    end
+	
+fun score (cs, goal) =
+    let val sum = sum_cards(cs)
+    in
+	if sum > goal
+	then 3 * (sum - goal)
+	else goal - sum
+    end
+	
 	
