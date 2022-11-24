@@ -21,16 +21,32 @@ exception IllegalMove
 (* put your solutions for problem 2 here *)
 
 fun all_except_option (n, ns) =
+    case ns of
+	[] => NONE
+      | n'::ns' => if same_string(n, n')
+		   then SOME ns'
+		   else case all_except_option(n, ns') of
+			    NONE => NONE
+			  | SOME (x::xs) => SOME (x::xs)
+
+						 
+fun get_substitutions1 (subs, s) =
+    case subs of
+	[] => []
+      | [s']::subs' => case all_except_option(s, [s']) of
+			 NONE => get_substitutions1(subs', s)
+		       | SOME xs => xs @ get_substitutions1(subs', s)
+
+							   
+fun get_substitutions2 (subs, s) =
     let fun helper (xs, acc) =
 	    case xs of
 		[] => acc
-	      | x::xs' =>
-		if same_string(n, x)
-		then helper(xs', acc)
-		else helper(xs', x::acc)
-    in
-	case helper(ns, []) of
-	    [] => NONE
-	  | _ => SOME (helper(ns, []))
+	      | [x]::xs' => case all_except_option(s, [x]) of
+				NONE => helper(xs', acc)
+			      | SOME ys => helper(xs', acc @ ys)
+    in case helper(subs, []) of
+	   [] => []
+	 | x::xs => x::xs
     end
 	
